@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nike × GEP | Op Model Quiz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;0,9..40,800&display=swap');
+  :root{--orange:#F58220;--orange-dark:#e06d10;--green:#10b981;--red:#ef4444;--blue:#3b82f6;--card:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.08);--text:#f0f0f0;--muted:#888;--dim:#555}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:linear-gradient(145deg,#0a0a0a 0%,#111 50%,#0d0d0d 100%);color:var(--text);font-family:'DM Sans',-apple-system,sans-serif;min-height:100vh;padding:24px 16px}
+  .container{max-width:680px;margin:0 auto}
+  .header{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+  .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--orange),var(--orange-dark));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:#fff}
+  .header-text h2{font-size:15px;font-weight:700;letter-spacing:.5px}
+  .header-text span{font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .fade-up{animation:fadeUp .5s ease-out forwards}
+  .btn-primary{width:100%;padding:16px 0;border-radius:12px;border:none;background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:#fff;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .3s;box-shadow:0 4px 24px rgba(245,130,32,.3);font-family:inherit}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 32px rgba(245,130,32,.4)}
+  .btn-secondary{padding:14px 0;border-radius:10px;border:1px solid var(--border);background:transparent;color:#ccc;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+  .btn-secondary:hover{border-color:rgba(255,255,255,.2)}
+  .progress-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.06)}
+  .progress-fill{height:100%;border-radius:2px;transition:width .5s ease;background:linear-gradient(90deg,var(--orange),var(--orange-dark))}
+  .q-card{background:var(--card);border-radius:16px;padding:24px;margin-bottom:20px;border:1px solid var(--border)}
+  .q-card p{font-size:17px;font-weight:600;line-height:1.5}
+  .options{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+  .opt-btn{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-radius:12px;text-align:left;border:1.5px solid var(--border);background:transparent;color:#e0e0e0;font-size:14px;line-height:1.5;cursor:pointer;transition:all .2s;font-family:inherit}
+  .opt-btn:hover:not(.locked){transform:translateY(-1px);border-color:var(--orange)}
+  .opt-btn.correct{border-color:var(--green);background:rgba(16,185,129,.15)}
+  .opt-btn.wrong{border-color:var(--red);background:rgba(239,68,68,.15)}
+  .opt-letter{min-width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;background:rgba(255,255,255,.08);color:#aaa}
+  .opt-btn.correct .opt-letter{background:var(--green);color:#fff}
+  .opt-btn.wrong .opt-letter{background:var(--red);color:#fff}
+  .explanation{padding:16px 20px;border-radius:12px;margin-bottom:16px}
+  .explanation.is-correct{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2)}
+  .explanation.is-wrong{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2)}
+  .explanation h4{font-size:14px;margin-bottom:6px}
+  .explanation p{font-size:13px;color:#bbb;line-height:1.6}
+  .stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:32px}
+  .stat-card{padding:20px 12px;border-radius:14px;text-align:center;background:var(--card);border:1px solid var(--border)}
+  .stat-label{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .stat-value{font-size:24px;font-weight:800}
+  .stat-sub{font-size:11px;color:var(--dim);margin-top:4px}
+  .review-item{padding:14px 16px;border-radius:10px;margin-bottom:8px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);display:flex;gap:12px;align-items:flex-start}
+  .review-item .q-text{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:4px}
+  .review-item .a-text{font-size:12px;color:var(--green)}
+  .btn-row{display:flex;gap:12px}
+  .btn-row>*{flex:1}
+  @media(max-width:480px){.stats-grid{grid-template-columns:1fr}.btn-row{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+<script>
+const TOTAL_Q=15;
+const QB=[
+{question:"What is the core principle of the new Nike × GEP operating model?",options:{A:"GEP owns strategy, Nike executes",B:"Nike owns strategy, GEP owns execution",C:"Nike and GEP share strategy and execution equally",D:"IBM continues to manage triage while GEP executes"},correct:"B",explanation:"The key principle is: Nike owns strategy, GEP owns execution. The Playbook and Job Aids guide the teams."},
+{question:"Which tool serves as the single front door for all sourcing requests?",options:{A:"SpendHQ",B:"Coupa",C:"BuyingHub",D:"GEP ASSIST"},correct:"C",explanation:"BuyingHub is the single intake for all GEP sourcing requests globally — all regions, all categories."},
+{question:"What major change affects project classification in the new model?",options:{A:"Moving from Sprint/Stride/Marathon to A/B/C",B:"Keeping A/B/C classification but automating it",C:"Moving from A/B/C classification to Sprint/Stride/Marathon",D:"Eliminating all project classification"},correct:"C",explanation:"Automated triage via GEP ASSIST replaces the old A/B/C classification with Sprint/Stride/Marathon."},
+{question:"How many MSPs will Nike have in the new model?",options:{A:"Three — one per region",B:"Two — GEP and IBM",C:"One — GEP only",D:"Four — one per category"},correct:"C",explanation:"GEP becomes the single MSP partner, replacing the multiple fragmented MSPs from the old model."},
+{question:"Which documents guide teams in the new operating model?",options:{A:"SLAs and KPIs only",B:"The Playbook and Job Aids",C:"MSP contracts and RACI matrices",D:"SpendHQ user guides"},correct:"B",explanation:"Key takeaway: the Playbook and Job Aids tell the team exactly how to work together."},
+{question:"What new tools are introduced to improve sourcing efficiency?",options:{A:"Tableau and Power BI",B:"SAP Ariba and Oracle",C:"RFx Builder and RFx Evaluator",D:"Jira and Confluence"},correct:"C",explanation:"RFx Builder and RFx Evaluator are introduced to drive efficiencies within the sourcing process."},
+{question:"How does SpendHQ integrate into the new model?",options:{A:"It completely replaces BuyingHub",B:"It integrates with BuyingHub via a system feed by end of May",C:"It is eliminated from the process",D:"It only works for annual reporting"},correct:"B",explanation:"SpendHQ integrates with BuyingHub via a system feed planned for end of May, creating a path to single intake."},
+{question:"What is a key advantage of the new model regarding role definition?",options:{A:"Everyone does everything interchangeably",B:"A clearly defined RACI differentiates roles between GEP and Nike",C:"Nike no longer has any role in sourcing",D:"IBM retains triage responsibility"},correct:"B",explanation:"The new model includes a clearly defined RACI to differentiate roles and responsibilities between GEP and Nike Category Leads."},
+{question:"How many total embedded resources does GEP have?",options:{A:"19",B:"36",C:"17",D:"53"},correct:"B",explanation:"36 embedded resources total, split between NA (19) and EMEA (17)."},
+{question:"How are Sourcing Leads aligned?",options:{A:"By region",B:"By category",C:"By complexity level",D:"By spend volume"},correct:"B",explanation:"Sourcing Leads are category-aligned for Marathon and Stride — consistent partner with deep domain knowledge."},
+{question:"How are Sourcing Agents aligned?",options:{A:"By category",B:"By tool (Coupa vs Jaggaer)",C:"By region — pool model, capacity-driven",D:"By client"},correct:"C",explanation:"Sourcing Agents are region-aligned for Sprint — pool model, capacity-driven. This is intentional and new."},
+{question:"What is the ETW breakdown for North America?",options:{A:"8 Costa Rica + 11 India",B:"11 Costa Rica + 8 India",C:"10 Costa Rica + 9 India",D:"12 Costa Rica + 7 India"},correct:"B",explanation:"NA has 19 ETWs: 11 in Costa Rica and 8 in India."},
+{question:"What is the ETW breakdown for EMEA?",options:{A:"8 Romania + 9 India",B:"9 Romania + 8 India",C:"10 Romania + 7 India",D:"7 Romania + 10 India"},correct:"A",explanation:"EMEA has 17 ETWs: 8 in Romania and 9 in India."},
+{question:"In how many locations are GEP teams based?",options:{A:"2 — India and Romania",B:"3 — Costa Rica, Romania, India",C:"4 — Costa Rica, Romania, India, USA",D:"3 — Costa Rica, India, Netherlands"},correct:"B",explanation:"3 locations: Costa Rica, Romania, and India."},
+{question:"How was team sizing determined?",options:{A:"Top-down headcount decision by management",B:"Based on historical volume, spend, and sourcing complexity",C:"By the number of available categories",D:"By the remaining budget after IBM's departure"},correct:"B",explanation:"Team size reflects actual request volume, spend, and sourcing complexity — not a top-down headcount decision."},
+{question:"What management model covers NA and EMEA?",options:{A:"Two separate independent management teams",B:"A single GEP management team spanning both regions with regional leads",C:"Management is entirely Nike-owned",D:"Each category has its own management"},correct:"B",explanation:"A single GEP Management team spans both regions — one program, consistent standards — with regional leads for local oversight."},
+{question:"What is the default track for a new sourcing request?",options:{A:"Sprint",B:"Marathon",C:"Stride",D:"Nike Only"},correct:"C",explanation:"Every request starts as Stride unless a condition routes it elsewhere. It's the default track."},
+{question:"Which condition routes a request to Sprint?",options:{A:"PMO required",B:"The request is a KIT/Pilot/POC",C:"Spend < $250K OR quote already in hand",D:"Spend > $500K"},correct:"C",explanation:"Sprint if quote in hand OR spend < $250K."},
+{question:"What happens with a KIT, Pilot, or POC request?",options:{A:"Assigned to Sprint",B:"Assigned to Stride",C:"Handled by GEP in Marathon Hybrid",D:"Handled by Nike only (Marathon Nike Only)"},correct:"D",explanation:"KIT/Pilot/POC requests go to Marathon Nike Only — GEP is not involved, Nike executes end-to-end."},
+{question:"When is a request routed to Marathon Hybrid?",options:{A:"When spend exceeds $1M",B:"When a PMO or Governing Forum is required",C:"When it involves a new supplier",D:"When the request comes from EMEA"},correct:"B",explanation:"Marathon Hybrid when a PMO / Governing Forum is required."},
+{question:"Which tool automates triage in the new model?",options:{A:"SpendHQ",B:"Coupa Sourcing",C:"GEP ASSIST",D:"BuyingHub Analytics"},correct:"C",explanation:"GEP ASSIST is the automated triage decision engine replacing manual triage."},
+{question:"What does GEP do with a 'Contract only' request?",options:{A:"Executes the contract entirely",B:"Facilitates handoff to Nike Legal",C:"Declines the request",D:"Reclassifies it as Sprint"},correct:"B",explanation:"For Contract-only requests, GEP facilitates the handoff to Nike Legal — no active sourcing involvement."},
+{question:"What happens with a 'PO Only' request?",options:{A:"GEP creates the PO in SAP",B:"Nike declines the request",C:"GEP enriches the PR, Nike P2P executes",D:"The request is cancelled"},correct:"C",explanation:"For PO Only: GEP enriches the PR, Nike P2P executes."},
+{question:"What are the three entry channels for new requests?",options:{A:"Email, Slack, Teams",B:"BuyingHub, PPM, Offline",C:"Coupa, Jaggaer, SpendHQ",D:"BuyingHub only"},correct:"B",explanation:"New requests can come via BuyingHub (BH), PPM, or Offline. The goal is to eliminate offline requests over time."},
+{question:"What is the expected duration for a Sprint project?",options:{A:"5–10 days",B:"15–30 days",C:"30–75 days",D:"75–120 days"},correct:"B",explanation:"Sprint: 15–30 days. Straightforward, known pricing or spend <$250K."},
+{question:"What is the expected duration for a Stride project?",options:{A:"15–30 days",B:"30–75 days",C:"75–120 days",D:"90–180 days"},correct:"B",explanation:"Stride: 30–75 days. Default track, no PMO, spend >$250K, unknown pricing."},
+{question:"In the Sprint track, what is Nike's role?",options:{A:"Nike drives the initiative and business partnering",B:"Nike is informed of progress via weekly/biweekly connects",C:"Nike executes end-to-end",D:"Nike approves every step before continuing"},correct:"B",explanation:"In Sprint, Nike is informed on progress via weekly/biweekly connects. GEP owns execution end-to-end."},
+{question:"In the Stride track, what must Nike approve?",options:{A:"Nothing — GEP is fully autonomous",B:"Strategy, RFP documentation, and award decision",C:"Only the final budget",D:"Only the supplier list"},correct:"B",explanation:"In Stride, Nike approves strategy, RFP docs, and award decision via weekly/biweekly connects."},
+{question:"In Marathon Hybrid, who drives the initiative?",options:{A:"GEP alone",B:"IBM in transition",C:"Nike owns and drives it, GEP supports execution",D:"A joint 50/50 committee"},correct:"C",explanation:"In Marathon Hybrid, Nike owns & drives the initiative. GEP supports with sourcing execution."},
+{question:"Which track is used when pricing is known and spend is below $250K?",options:{A:"Stride",B:"Marathon Hybrid",C:"Marathon Nike Only",D:"Sprint"},correct:"D",explanation:"Sprint for straightforward requests with known pricing or spend <$250K."},
+{question:"Which statement best summarizes the ownership dynamic across tracks?",options:{A:"GEP decides the track, Nike executes",B:"The track determines how much involvement, not whether GEP is involved",C:"Nike chooses the track based on budget",D:"Each track has 50/50 ownership"},correct:"B",explanation:"The track determines how much, not whether — GEP executes, Nike governs."},
+{question:"How many stage gates exist in the sourcing process?",options:{A:"5",B:"6",C:"7",D:"8"},correct:"C",explanation:"7 stage gates: project charter review, market research review, sourcing strategy approval, RFP package approval, shortlisting, sourcing recommendation, savings submission approval."},
+{question:"Which tool is used for the 'Savings submission approval' gate?",options:{A:"Coupa",B:"Jaggaer",C:"BuyingHub",D:"SpendHQ"},correct:"D",explanation:"Savings submission approval uses SpendHQ to validate documented savings before project closure."},
+{question:"Which track has the most stage gates?",options:{A:"Sprint",B:"Stride",C:"Marathon",D:"All have the same number"},correct:"C",explanation:"Marathon has all 7 stage gates. Stride has fewer, Sprint even fewer (streamlined), but they're mandatory across all tracks."},
+{question:"At which step does 'Sourcing strategy approval' occur?",options:{A:"End of step 1",B:"End of step 2",C:"End of step 3",D:"End of step 4"},correct:"C",explanation:"Sourcing strategy approval occurs at the end of step 3 in the sourcing process."},
+{question:"What is the primary purpose of stage gates?",options:{A:"Allow GEP to work without supervision",B:"Ensure documented Nike validation at every critical decision point",C:"Slow down the process to avoid errors",D:"Satisfy regulatory requirements"},correct:"B",explanation:"Stage gates ensure documented Nike validation at every critical decision point."},
+{question:"Which tools are used for RFP packages and bid evaluation?",options:{A:"BuyingHub and SpendHQ",B:"Coupa and Jaggaer",C:"GEP ASSIST and RFx Builder",D:"SAP Ariba and Oracle"},correct:"B",explanation:"Coupa/Jaggaer are used for RFP packages, bid evaluation, supplier shortlisting, and sourcing recommendations."},
+{question:"What is the role of GEP ASSIST?",options:{A:"Manage supplier contracts",B:"Automate sourcing request triage",C:"Create savings reports",D:"Send RFPs to suppliers"},correct:"B",explanation:"GEP ASSIST is the automated triage decision engine replacing manual triage."},
+{question:"Which new tool helps build RFx documents?",options:{A:"SpendHQ Builder",B:"Coupa Designer",C:"RFx Builder",D:"BuyingHub Forms"},correct:"C",explanation:"RFx Builder is a new tool introduced to create RFx documents and improve sourcing efficiency."},
+{question:"Which integration is planned for end of May?",options:{A:"Coupa to Jaggaer",B:"SpendHQ to BuyingHub",C:"GEP ASSIST to SpendHQ",D:"BuyingHub to SAP"},correct:"B",explanation:"The SpendHQ to BuyingHub integration via system feed is planned for end of May, creating the path to single intake."},
+{question:"What are the three types of learning activities in Source Force?",options:{A:"Webinars, workshops, and exams",B:"Training, Category KT, and Project KT",C:"E-learning, coaching, and certification",D:"Onboarding, shadowing, and assessment"},correct:"B",explanation:"Three types: Training (presenter-led), Category KT (collaborative onboarding to Nike category nuances), and Project KT (review between IBM/WNS, GEP & Nike)."},
+{question:"The cross-category Sourcing Agent pool is region-aligned. What types of projects are they primarily allocated to?",options:{A:"Only Marathon projects",B:"Mostly Sprint and some Stride (based on capacity)",C:"Only Stride projects",D:"All tracks equally"},correct:"B",explanation:"The cross-category Sourcing Agent pool is hard-aligned to region and allocated to mostly Sprint projects and a few Stride, based on capacity. Sourcing Leads, by contrast, are category-aligned and handle Marathon and Stride."},
+{question:"Which tool is used for savings reporting and validation?",options:{A:"BuyingHub",B:"Coupa",C:"SpendHQ",D:"GEP ASSIST"},correct:"C",explanation:"SpendHQ is the savings reporting and validation tool."},
+{question:"What was the old classification system used before Sprint/Stride/Marathon?",options:{A:"Simple / Standard / Complex",B:"A / B / C",C:"Tier 1 / Tier 2 / Tier 3",D:"Low / Medium / High"},correct:"B",explanation:"The old triage used an A/B/C classification, now replaced by Sprint/Stride/Marathon via GEP ASSIST."},
+{question:"In the two-in-a-box model, what is the key difference between Sourcing Leads and Sourcing Agents?",options:{A:"Leads handle Sprint, Agents handle Marathon",B:"Leads are category-aligned, Agents are region-aligned",C:"Leads work in India, Agents work in Costa Rica",D:"Leads report to Nike, Agents report to GEP"},correct:"B",explanation:"Sourcing Leads are category-aligned (for Marathon and Stride) while Sourcing Agents are region-aligned (for Sprint) — this is the two-in-a-box design."},
+{question:"What happens to offline sourcing requests over time in the new model?",options:{A:"They are routed through GEP ASSIST",B:"They are handled exclusively by Nike",C:"They are to be eliminated progressively",D:"They remain as a permanent backup channel"},correct:"C",explanation:"Offline requests are to be eliminated over time as SpendHQ integrates into BuyingHub, consolidating all intake through a single front door."},
+{question:"Which categories does GEP cover across both NA and EMEA?",options:{A:"Only Technology and Marketing",B:"Corp. & Prof. Services, Technology, Marketing, Retail & Places, Supply Chain",C:"Supply Chain, Logistics, Manufacturing, IT, HR",D:"Marketing, Finance, Legal, Technology, Facilities"},correct:"B",explanation:"GEP covers five categories across both regions: Corporate & Professional Services, Technology, Marketing, Retail & Places, and Supply Chain."},
+{question:"In the Stride track, what additional checkpoints exist compared to Sprint?",options:{A:"PMO governance reviews",B:"Alignment on sourcing strategy and RFP package",C:"Weekly executive steering committee meetings",D:"Mandatory supplier site visits"},correct:"B",explanation:"Stride includes additional checkpoints to align on sourcing strategy and RFP package, which Sprint does not require since it deals with straightforward, known-pricing requests."},
+{question:"What tools are used at the RFP package and supplier shortlisting stage gates?",options:{A:"BuyingHub and SpendHQ",B:"GEP ASSIST and RFx Evaluator",C:"Coupa and Jaggaer",D:"Excel and SharePoint"},correct:"C",explanation:"Coupa/Jaggaer are the tools used at the RFP package approval and supplier shortlisting stage gates in the sourcing process."},
+];
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+const S={screen:"home",questions:[],currentQ:0,selected:null,showResult:false,score:0,streak:0,bestStreak:0};
+
+function startQuiz(){S.screen="quiz";S.questions=shuffle(QB).slice(0,TOTAL_Q);S.currentQ=0;S.score=0;S.selected=null;S.showResult=false;S.streak=0;S.bestStreak=0;render();}
+
+function selectAnswer(l){if(S.showResult)return;S.selected=l;S.showResult=true;const q=S.questions[S.currentQ];q._ua=l;if(l===q.correct){S.score++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);}else{S.streak=0;}render();}
+
+function nextQuestion(){if(S.currentQ+1>=TOTAL_Q){S.screen="results";render();return;}S.currentQ++;S.selected=null;S.showResult=false;render();}
+
+function getGrade(){const p=Math.round(S.score/TOTAL_Q*100);if(p>=90)return{e:"🏆",l:"Excellent!",c:"var(--green)",p};if(p>=70)return{e:"✅",l:"Well done!",c:"var(--blue)",p};if(p>=50)return{e:"📖",l:"Room to improve",c:"#f59e0b",p};return{e:"🔁",l:"Review needed",c:"var(--red)",p};}
+
+function render(){
+const $=document.getElementById("app");
+const hdr=`<div class="header"><div class="logo">Q</div><div class="header-text"><h2>NIKE × GEP</h2><span>Op Model Quiz</span></div></div>`;
+
+if(S.screen==="home"){
+$.innerHTML=`${hdr}<div class="fade-up">
+<h1 style="font-size:32px;font-weight:800;line-height:1.15;margin-bottom:8px">Test your knowledge<br><span style="color:var(--orange)">Source Force</span></h1>
+<p style="color:#999;font-size:14px;margin-bottom:12px;line-height:1.6">15 AI-generated questions covering the full Operating Model training — team structure, intake & triage, sourcing tracks, stage gates, and tools.</p>
+<p style="color:#666;font-size:13px;margin-bottom:32px">Each session picks a different set — randomized every time you play.</p>
+<button class="btn-primary" onclick="startQuiz()">Start Quiz →</button></div>`;return;}
+
+if(S.screen==="quiz"){
+const q=S.questions[S.currentQ],pr=(S.currentQ+1)/TOTAL_Q*100;
+const opts=["A","B","C","D"].map(l=>{let c="opt-btn";if(S.showResult){c+=" locked";if(l===q.correct)c+=" correct";else if(l===S.selected)c+=" wrong";}return`<button class="${c}" onclick="selectAnswer('${l}')"><span class="opt-letter">${l}</span><span style="padding-top:3px">${q.options[l]}</span></button>`;}).join('');
+let res='';if(S.showResult){const ok=S.selected===q.correct;res=`<div class="fade-up"><div class="explanation ${ok?'is-correct':'is-wrong'}"><h4 style="color:${ok?'var(--green)':'var(--red)'}">${ok?'✓ Correct!':'✗ The answer was '+q.correct}</h4><p>${q.explanation}</p></div><button class="btn-primary" onclick="nextQuestion()">${S.currentQ+1>=TOTAL_Q?'See Results →':'Next Question →'}</button></div>`;}
+$.innerHTML=`${hdr}<div class="fade-up"><div style="margin-bottom:24px"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:13px;color:var(--muted)">Question ${S.currentQ+1}/${TOTAL_Q}</span><div style="display:flex;gap:12px"><span style="font-size:13px;color:var(--orange)">Score: ${S.score}</span>${S.streak>=2?`<span style="font-size:13px;color:var(--green)">🔥 ${S.streak}</span>`:''}</div></div><div class="progress-bar"><div class="progress-fill" style="width:${pr}%"></div></div></div><div class="q-card"><p>${q.question}</p></div><div class="options">${opts}</div>${res}</div>`;return;}
+
+if(S.screen==="results"){
+const g=getGrade();
+const rev=S.questions.map(q=>{const i=q._ua===q.correct?"✅":"❌";return`<div class="review-item"><span style="font-size:18px;flex-shrink:0;margin-top:2px">${i}</span><div style="min-width:0"><p class="q-text">${q.question}</p><p class="a-text">${q.correct}: ${q.options[q.correct]}</p></div></div>`;}).join('');
+$.innerHTML=`${hdr}<div class="fade-up" style="text-align:center;padding-top:20px">
+<div style="font-size:64px;margin-bottom:16px">${g.e}</div>
+<h2 style="font-size:28px;font-weight:800;margin-bottom:4px">${g.l}</h2>
+<p style="color:var(--muted);font-size:14px;margin-bottom:32px">Your Source Force quiz results</p>
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-label">Score</div><div class="stat-value" style="color:${g.c}">${S.score}/${TOTAL_Q}</div><div class="stat-sub">${g.p}%</div></div>
+<div class="stat-card"><div class="stat-label">Best Streak</div><div class="stat-value" style="color:${g.c}">🔥 ${S.bestStreak}</div><div class="stat-sub">in a row</div></div>
+<div class="stat-card"><div class="stat-label">Questions</div><div class="stat-value" style="color:${g.c}">${TOTAL_Q}</div><div class="stat-sub">total</div></div>
+</div>
+<div style="text-align:left;margin-bottom:32px"><h3 style="font-size:14px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">Review</h3>${rev}</div>
+<div class="btn-row"><button class="btn-secondary" onclick="S.screen='home';render()">← Home</button><button class="btn-primary" onclick="startQuiz()">Play Again →</button></div></div>`;}
+}
+render();
+</script>
+</body>
+</html>
